@@ -2,111 +2,9 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Przegląd</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: #313335;
-            color: #abb7c4;
-            font-family: "Maven Pro", sans-serif;
-        }
-
-        #container {
-            background-color: #2b2b2b;
-            left: 50%;
-            padding: 2rem;
-            position: absolute;
-            transform: translateX(-50%);
-            top: 0;
-            width: 60vw;
-        }
-
-        #header {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        #header img {
-            height: 80px;
-            image-rendering: pixelated;
-        }
-
-        #title {
-            font-size: 300%;
-            line-height: 0.8em;
-            text-align: center;
-        }
-
-        #title .japanese {
-            letter-spacing: 1rem;
-            font-size: 50%;
-        }
-
-        #container-body {
-            margin: 3rem;
-        }
-
-        #table-of-contents {
-            line-height: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        ol {
-            counter-reset: item;
-            transform: translateX(1rem);
-        }
-
-        li {
-            display: block;
-        }
-
-        li:before {
-            content: counters(item, ".") " ";
-            counter-increment: item;
-        }
-
-        .section-title {
-            margin: 1rem 0;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        thead {
-            background-color: #222;
-            font-weight: 600;
-        }
-
-        .align-justify {
-            text-align: justify;
-        }
-
-        .align-right {
-            text-align: right;
-        }
-
-        .align-center {
-            text-align: center;
-        }
-
-        td {
-            padding: 0.5rem;
-        }
-
-        tbody > tr:nth-child(odd) {
-            background-color: #333;
-        }
-
-        tbody > tr:nth-child(even) {
-            background-color: #282828;
-        }
-    </style>
+    <title>Shiroi Dainaso</title>
+    <link href="prism.css" rel="stylesheet"/>
+    <link href="style.css" rel="stylesheet"/>
 </head>
 <body>
 
@@ -118,7 +16,7 @@
         <img src="cactus_small.png" alt="">
     </div>
 
-    <div id="container-body">
+    <div id="container-body" class="line-numbers">
 
         <div id="table-of-contents">
             <h3 style="margin-bottom: 0.5rem">Spis treści</h3>
@@ -128,6 +26,18 @@
                     <ol>
                         <li>&#x2001;Wymagania funkcjonalne</li>
                         <li>&#x2001;Wymagania pozafunkcjonalne</li>
+                    </ol>
+                </li>
+                <li>&#x2001;Szczegóły techniczne / ciekawostki
+                    <ol>
+                        <li>&#x2001;Użyta technologia</li>
+                        <li>&#x2001;Paradygmat obiektowy
+                            <ol>
+                                <li>&#x2001;Polimorfizm, abstrakcja</li>
+                                <li>&#x2001;Dziedziczenie</li>
+                            </ol>
+                        </li>
+                        <li>&#x2001;Zarządzanie assetami</li>
                     </ol>
                 </li>
             </ol>
@@ -194,6 +104,7 @@
             </tr>
             </tbody>
         </table>
+        <p class="caption top-margin"><b>Tabela 1.</b>&#x2002;Wymagania funkcjonalne gry.</p>
 
         <h2 class="section-title">2.2&#x2001;Wymagania pozafunkcjonalne</h2>
 
@@ -248,10 +159,134 @@
             </tr>
             </tbody>
         </table>
+        <p class="caption top-margin"><b>Tabela 2.</b>&#x2002;Wymagania pozafunkcjonalne gry.</p>
+
+        <h1 class="section-title">3&#x2001;Szczegóły techniczne / ciekawostki</h1>
+
+        <h2 class="section-title">3.1&#x2001;Użyta technologia</h2>
+
+        <p class="align-justify">Gra została stworzona przy pomocy biblioteki graficznej
+            <a href="https://www.sfml-dev.org/download/csfml/">SFML</a> autorstwa Laurenta Gomili. Użycie portu na język
+            C umożliwiło napisanie całości kodu gry w tym języku.</p>
+
+        <h2 class="section-title">3.2&#x2001;Paradygmat obiektowy</h2>
+
+        <h3 class="section-title">3.2.1&#x2001;Polimorfizm, abstrakcja</h3>
+
+        <p class="align-justify">W celu ułatwienia pracy i utrzymania przejrzystego kodu, projekt jest stworzony z
+            zachowaniem zasad programowania obiektowego. Z racji natury języka C, który nie obsługuje programowania
+            obiektowego, mechanizmy takie jak dziedziczenie i abstrakcja musiały zostać zaimplementowane ręcznie.
+            Przykład:</p>
+
+        <div class="vertical-margin">
+            <pre>
+<code class="language-cpp">void dsScene_iteration(dsScene* _this, float deltaTime) {
+    g.speed += deltaTime * 0.005f;
+    for (__dsListNode* node = _this->__head; node != null; node = node->next) {
+        dsGameObject* object = node->object;
+        object->behavior(object, deltaTime);
+        if ((INSTANCE_OF(object, dsCactus) or INSTANCE_OF(object, dsPterodactyl))
+            and dsDinosaur_touching(_this->__player, object))
+            dsScene_gameOver(_this);
+        if (INSTANCE_OF(object, dsScrollingObject)
+            and ((dsScrollingObject*) object)->markedToRemove)
+            dsScene_remove(_this, object);
+    }
+}</code>
+            </pre>
+            <p class="caption"><b>Listing 1.</b>&#x2002;Metoda wykonywana w każdej klatce gry.</p>
+        </div>
+
+        <p class="align-justify">Powyższa funkcja jest de facto metodą instancyjną struktury
+            <code class="language-">dsScene</code>. Sygnalizuje to obecność argumentu
+            <code class="language-">_this</code>, który pełni funkcję obiektu, na którym wywoływana jest metoda.
+            W językach obiektowych, argument ten generowany jest niejawnie podczas kompilacji. Pętla
+            <code class="language-">for</code> przechodzi przez wszystkie obiekty struktury
+            <code class="language-">dsGameObject</code>, która jest bazą wszystkich struktur
+            reprezentujących widoczne elementy gry (dinozaur, kaktus, chmura, licznik punktów itd.).</p>
+        <p class="align-justify top-margin">W linijce 5 wywoływana jest metoda abstakcyjna
+            <code class="language-">behavior</code>. Każdy typ obiektu ma inną wersję tej metody (np. dinozaur zmienia
+            wygląd w ramach animacji oraz reaguje na sterowanie, a chmura przesuwa się w lewo po scenie). Niżej
+            uruchamiane są procedury sceny dla konkretnych grup typów obiektów.</p>
+
+        <h3 class="section-title">3.2.2&#x2001;Dziedziczenie</h3>
+
+        <p class="align-justify"></p>
+
+        <p class="align-justify">Język C nie obsługuje dziedziczenia struktur. Nie przeszkadza to jednak w samodzielnemu
+            stworzeniu mechanizmu dziedziczenia. Poniższy kod przedstawia strukturę
+            <code class="language-">dsGameObject</code>, która pełni funkcję klasy abstrakcyjnej (słowo
+            <code class="language-">abstract</code> jest jedynie adnotacją; semantycznie nie pełni żadnej funkcji) oraz
+            strukturę <code class="language-">dsDinosaur</code>, która "dziedziczy" z
+            <code class="language-">dsGameObject</code> wszystkie pola i metody.</p>
+
+        <pre>
+<code class="language-c">typedef abstract struct dsGameObject {
+    dsGameObjectType type;
+    sfRectangleShape* sprite;
+    abstract void (* behavior)(dsGameObject*, float);
+    abstract void (* draw)(const dsGameObject*, sfRenderWindow*);
+} dsGameObject;
+
+#define dsGameObject_BASE dsGameObjectType type; sfRectangleShape* sprite;\
+                          void (* behavior) (dsGameObject*, float);\
+                          void (* draw)(const dsGameObject*, sfRenderWindow*);
+
+typedef struct dsDinosaur {
+    extends(dsGameObject)
+
+    const sfTexture* hitTexture, * idleTexture, * duck1Texture,
+                   * duck2Texture, * step1Texture, * step2Texture;
+    sfSound* jumpSound;
+    float velocityY;
+    bool jumping, ducking, __ignoreJump, __firstJumpIgnored;
+} dsDinosaur;</code>
+            </pre>
+        <p class="caption"><b>Listing 2.</b>&#x2002;Bazowa "klasa" abstrakcyjna i "klasa" z niej dziedzicząca.</p>
+
+        <h2 class="section-title">3.3&#x2001;Zarządzanie assetami</h2>
+
+        <p class="align-justify">Obiekty w grze korzystają z globalnie dostępnych assetów. Poza ułatwieniem pracy,
+            dzięki takiemu rozwiązaniu, każda tekstura czy dźwięk przechowywane są w pamięci tylko raz, przez cały czas
+            uruchomienia gry, bez potrzeby tworzenia nowego obiektu assetu dla każdego kaktusa czy pterodaktyla:</p>
+
+        <div class="vertical-margin">
+            <pre>
+<code class="language-c">dsAssetsBundle_register(g.assets, "ds:font.pixelboy",
+                        ds_createFont("assets/pixel_boy.ttf"));
+dsAssetsBundle_register(g.assets, "ds:sound.dainaso.hit",
+                        ds_createSound("assets/game_over_ds:sound.ogg"));
+dsAssetsBundle_register(g.assets, "ds:sound.dainaso.jump",
+                        ds_createSound("assets/jump_ds:sound.ogg"));
+dsAssetsBundle_register(g.assets, "ds:texture.cactus.large",
+                        ds_createTexture("assets/cactus_large.png"));
+dsAssetsBundle_register(g.assets, "ds:texture.cactus.small",
+                        ds_createTexture("assets/cactus_small.png"));
+dsAssetsBundle_register(g.assets, "ds:texture.cloud",
+                        ds_createTexture("assets/cloud.png"));
+// ...</code>
+            </pre>
+            <p class="caption"><b>Listing 3.</b>&#x2002;Rejestracja niektórych assetów.</p>
+        </div>
+
+        <div class="vertical-margin">
+            <pre>
+<code class="language-c">void dsText_super(dsText* _this) {
+    // ...
+    dsText_setHorizontalAlignment(_this, dsStart);
+    dsText_setVerticalAlignment(_this, dsStart);
+    sfText_setFillColor(_this->__text, g.config.textColor);
+    sfText_setFont(_this->__text, dsAssetsBundle_get(g.assets, "ds:font.pixelboy"));
+}</code>
+            </pre>
+            <p class="caption"><b>Listing 4.</b>&#x2002;Wykorzystanie czcionki z biblioteki assetów (linijka 6) przy
+                tworzeniu obiektu tekstu.</p>
+        </div>
 
     </div>
 
 </div>
 
+<script src="prism.js"></script>
 </body>
 </html>

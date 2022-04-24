@@ -16,7 +16,7 @@ _static float __dsDune_speed();
 constructor(dsDune)() {
     dsDune* _this = malloc(sizeof(dsDune));
     _this->scrollingType = dsDuneT;
-    const sfTexture* texture = dsAssetsBundle_get(g.assets, "texture.dune");
+    const sfTexture* texture = dsAssetsBundle_get(g.assets, "ds:texture.dune");
     const sfVector2u size = sfTexture_getSize(texture);
     dsGameObject_superSprite((dsGameObject*) _this, texture, ds_multiplyVector2UF(size, 2));
     dsScrollingObject_super((dsScrollingObject*) _this, __dsDune_speed);

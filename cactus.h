@@ -16,7 +16,7 @@ _static float dsCactus_speed();
 constructor(dsCactus)(bool large) {
     dsCactus* _this = malloc(sizeof(dsCactus));
     _this->scrollingType = dsCactusT;
-    const sfTexture* texture = dsAssetsBundle_get(g.assets, large ? "texture.cactus.large" : "texture.cactus.small");
+    const sfTexture* texture = dsAssetsBundle_get(g.assets, large ? "ds:texture.cactus.large" : "ds:texture.cactus.small");
     const sfVector2f size = ds_convertVector2UF(sfTexture_getSize(texture));
     dsGameObject_superSprite((dsGameObject*) _this, texture, size);
     dsScrollingObject_super((dsScrollingObject*) _this, dsCactus_speed);

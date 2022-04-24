@@ -35,7 +35,7 @@ constructor(dsScoreCounter)() {
     _this->behavior = (void (*)(dsGameObject*, float)) __dsScoreCounter_behavior;
     _this->draw = (void (*)(const dsGameObject*, sfRenderWindow*)) __dsScoreCounter_draw;
     _this->score = 0;
-    _this->milestoneSound = dsAssetsBundle_get(g.assets, "sound.milestone");
+    _this->milestoneSound = dsAssetsBundle_get(g.assets, "ds:sound.milestone");
     _this->running = true;
     sfRectangleShape_setOrigin(_this->sprite, (sfVector2f) {58, 0});
     sfRectangleShape_setPosition(_this->sprite, position);

@@ -16,8 +16,8 @@ void __dsPterodactyl_behavior(dsPterodactyl* _this, float deltaTime);
 constructor(dsPterodactyl)() {
     dsPterodactyl* _this = malloc(sizeof(dsPterodactyl));
     _this->scrollingType = dsCactusT;
-    _this->flap1Texture = dsAssetsBundle_get(g.assets, "texture.pterodactyl.flap1");
-    _this->flap2Texture = dsAssetsBundle_get(g.assets, "texture.pterodactyl.flap2");
+    _this->flap1Texture = dsAssetsBundle_get(g.assets, "ds:texture.pterodactyl.flap1");
+    _this->flap2Texture = dsAssetsBundle_get(g.assets, "ds:texture.pterodactyl.flap2");
     const sfVector2u size = sfTexture_getSize(_this->flap1Texture);
     dsGameObject_superSprite((dsGameObject*) _this, _this->flap1Texture, ds_convertVector2UF(size));
     dsScrollingObject_super((dsScrollingObject*) _this, dsPterodactyl_speed);

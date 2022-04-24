@@ -46,7 +46,7 @@ constructor(dsScene)() {
     _this->size = 0;
     _this->playing = true;
     _this->background = g.config.scene.color;
-    _this->__gameOverSound = dsAssetsBundle_get(g.assets, "sound.dainaso.hit");
+    _this->__gameOverSound = dsAssetsBundle_get(g.assets, "ds:sound.dainaso.hit");
     _this->__scoreCounter = _new(dsScoreCounter)();
     _this->__player = _new(dsDinosaur)();
     dsScene_add(_this, (dsGameObject*) _this->__scoreCounter);

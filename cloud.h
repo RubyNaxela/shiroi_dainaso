@@ -17,7 +17,7 @@ _static float __dsCloud_speed();
 constructor(dsCloud)() {
     dsCloud* _this = malloc(sizeof(dsCloud));
     _this->scrollingType = dsCloudT;
-    const sfTexture* texture = dsAssetsBundle_get(g.assets, "texture.cloud");
+    const sfTexture* texture = dsAssetsBundle_get(g.assets, "ds:texture.cloud");
     dsGameObject_superSprite((dsGameObject*) _this, texture, ds_convertVector2UF(sfTexture_getSize(texture)));
     dsScrollingObject_super((dsScrollingObject*) _this, __dsCloud_speed);
     return _this;

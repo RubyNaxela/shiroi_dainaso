@@ -22,13 +22,13 @@ void __dsDinosaur_behavior(dsDinosaur* _this, float deltaTime);
 constructor(dsDinosaur)() {
     dsDinosaur* _this = malloc(sizeof(dsDinosaur));
     _this->type = dsDinosaurT;
-    _this->hitTexture = dsAssetsBundle_get(g.assets, "texture.dainaso.hit");
-    _this->idleTexture = dsAssetsBundle_get(g.assets, "texture.dainaso.idle");
-    _this->duck1Texture = dsAssetsBundle_get(g.assets, "texture.dainaso.duck1");
-    _this->duck2Texture = dsAssetsBundle_get(g.assets, "texture.dainaso.duck2");
-    _this->step1Texture = dsAssetsBundle_get(g.assets, "texture.dainaso.step1");
-    _this->step2Texture = dsAssetsBundle_get(g.assets, "texture.dainaso.step2");
-    _this->jumpSound = dsAssetsBundle_get(g.assets, "sound.dainaso.jump");
+    _this->hitTexture = dsAssetsBundle_get(g.assets, "ds:texture.dainaso.hit");
+    _this->idleTexture = dsAssetsBundle_get(g.assets, "ds:texture.dainaso.idle");
+    _this->duck1Texture = dsAssetsBundle_get(g.assets, "ds:texture.dainaso.duck1");
+    _this->duck2Texture = dsAssetsBundle_get(g.assets, "ds:texture.dainaso.duck2");
+    _this->step1Texture = dsAssetsBundle_get(g.assets, "ds:texture.dainaso.step1");
+    _this->step2Texture = dsAssetsBundle_get(g.assets, "ds:texture.dainaso.step2");
+    _this->jumpSound = dsAssetsBundle_get(g.assets, "ds:sound.dainaso.jump");
     dsGameObject_superSprite((dsGameObject*) _this, _this->idleTexture,
                              ds_multiplyVector2UF(sfTexture_getSize(_this->idleTexture), 2));
     _this->behavior = (void (*)(dsGameObject*, float)) __dsDinosaur_behavior;

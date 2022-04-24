@@ -36,7 +36,7 @@ void dsText_super(dsText* _this) {
     dsText_setHorizontalAlignment(_this, dsStart);
     dsText_setVerticalAlignment(_this, dsStart);
     sfText_setFillColor(_this->__text, g.config.textColor);
-    sfText_setFont(_this->__text, dsAssetsBundle_get(g.assets, "font.pixelboy"));
+    sfText_setFont(_this->__text, dsAssetsBundle_get(g.assets, "ds:font.pixelboy"));
 }
 
 constructor(dsText)() {

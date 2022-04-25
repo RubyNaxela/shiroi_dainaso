@@ -1,7 +1,3 @@
-//
-// Created by RubyNaxela on 12.04.2022.
-//
-
 #ifndef DAINASO_SCENE_DECL_H
 #define DAINASO_SCENE_DECL_H
 

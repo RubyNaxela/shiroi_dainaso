@@ -82,17 +82,17 @@ contract_pure bool dsDinosaur_touching(const dsDinosaur* dinosaur, const dsGameO
     const sfFloatRect dinosaurBounds = sfRectangleShape_getGlobalBounds(dinosaurSprite),
             obstacleBounds = sfRectangleShape_getGlobalBounds(obstacleSprite);
 
-    sfFloatRect* intersection = malloc(sizeof(sfFloatRect));
-    if (sfFloatRect_intersects(&dinosaurBounds, &obstacleBounds, intersection)) {
+    sfFloatRect intersection;
+    if (sfFloatRect_intersects(&dinosaurBounds, &obstacleBounds, &intersection)) {
 
         sfImage* dinosaurTexture = sfTexture_copyToImage(sfRectangleShape_getTexture(dinosaurSprite)),
                 * obstacleTexture = sfTexture_copyToImage(sfRectangleShape_getTexture(obstacleSprite));
         const sfTransform obstacleTransform = sfRectangleShape_getInverseTransform(obstacleSprite),
                 dinosaurTransform = sfRectangleShape_getInverseTransform(dinosaurSprite);
 
-        for (int y = 0; y < (int) intersection->height; y++) {
-            for (int x = 0; x < (int) intersection->width; x++) {
-                const sfVector2f point = {intersection->left + (float) x, intersection->top + (float) y};
+        for (int y = 0; y < (int) intersection.height; y++) {
+            for (int x = 0; x < (int) intersection.width; x++) {
+                const sfVector2f point = {intersection.left + (float) x, intersection.top + (float) y};
                 const sfVector2u
                         obstaclePoint = ds_convertVector2FU(sfTransform_transformPoint(&obstacleTransform, point)),
                         dinosaurPoint = ds_convertVector2FU(sfTransform_transformPoint(&dinosaurTransform, point));
@@ -102,14 +102,10 @@ contract_pure bool dsDinosaur_touching(const dsDinosaur* dinosaur, const dsGameO
             }
         }
 
-        free(intersection);
         free(dinosaurTexture);
         free(obstacleTexture);
         return false;
-    } else {
-        free(intersection);
-        return false;
-    }
+    } else return false;
 }
 
 void dsDinosaur_hit(dsDinosaur* _this) {

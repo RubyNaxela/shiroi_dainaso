@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Shiroi Dainaso</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="prism.css" rel="stylesheet"/>
     <link href="style.css" rel="stylesheet"/>
 </head>
@@ -38,6 +40,7 @@
                             </ol>
                         </li>
                         <li>&#x2001;Zarządzanie assetami</li>
+                        <li>&#x2001;Wykrywanie kolizji</li>
                     </ol>
                 </li>
             </ol>
@@ -221,7 +224,7 @@
             <code class="language-">dsGameObject</code> wszystkie pola i metody.</p>
 
         <pre>
-<code class="language-c">typedef abstract struct dsGameObject {
+<code class="language-cpp">typedef abstract struct dsGameObject {
     dsGameObjectType type;
     sfRectangleShape* sprite;
     abstract void (* behavior)(dsGameObject*, float);
@@ -281,6 +284,95 @@ dsAssetsBundle_register(g.assets, "ds:texture.cloud",
             </pre>
             <p class="caption"><b>Listing 4.</b>&#x2002;Wykorzystanie czcionki z biblioteki assetów (linijka 6) przy
                 tworzeniu obiektu tekstu.</p>
+        </div>
+
+        <h2 class="section-title">3.4&#x2001;Wykrywanie kolizji</h2>
+
+        <p class="align-justify">Gdy w grze występują obiekty prostokątne, wykrycie kolizji między nimi jest bardzo
+            łatwe. Można użyć metody AABB (ang. axis-aligned bounding box), która sprowadza się do obliczenia
+            prawdziwości pojedynczego wyrażenia:</p>
+
+        <p class="align-center vertical-margin" style="font-family: 'CMU Serif', sans-serif;">
+            col((<i>A</i>, <i>B</i>&#x2006;), (<i>C</i>, <i>D</i>&#x2006;)) =
+            (<i>A.x</i> &lt; <i>D.x</i>&#x2006;) &and; (<i>B.x</i> > <i>C.x</i>&#x2006;) &and;
+            (<i>A.y</i> &lt; <i>D.y</i>&#x2006;) &and; (<i>B.y</i> > <i>C.y</i>&#x2006;)
+        </p>
+
+        <div class="vertical-margin">
+            <img src="collision.png" alt="" style="width: 50%; image-rendering: pixelated;
+            position: relative; left: 50%; transform: translateX(-50%);">
+            <p class="caption"><b>Ryc. 1.</b>&#x2002;Kolizja dwóch prostokątnych obiektów.</p>
+        </div>
+
+        <p class="align-justify">Metoda ta stosowana jest także wtedy, gdy zaokrąglenie przy pomocy prostokąta
+            wyznaczanego przez granice tekstury, jest akceptowalne. Nie mogła ona jednak zostać zastosowana w grze
+            Shiroi Dainaso:</p>
+
+        <div class="vertical-margin">
+            <img src="collision2.png" alt="" style="width: 50%; image-rendering: pixelated;
+            position: relative; left: 50%; transform: translateX(-50%);">
+            <p class="caption"><b>Ryc. 2.</b>&#x2002;Hipotetyczna kolizja dinozaura z kaktusem.</p>
+        </div>
+
+        <p class="align-justify">Na ryc. 2. widać, że dinozaur nie dotyka kaktusa, jednak prostokąty wyznaczane przez
+            granice ich tekstur nachodzą na siebie (plik tekstury dinozaura w pozycji stojącej jest szerszy niż sam
+            dinozaur ze względu na zachowanie stałego rozmiaru tekstur; dinozaur w pozycji uniku zajmuje całą szerokość
+            tekstury).</p>
+        <p class="align-justify">Z tego względu, zastosowana została technika <i>per-pixel collision</i>, która polega
+            na wyznaczeniu przecięcia AABB, a następnie (jeśli przecięcie istnieje), sprawdzeniu czy wewnątrz niego
+            istnieje jakikolwiek punkt, na którym leży piksel nieprzezroczysty obu tekstur. Pomimo kwadratowej
+            złożoności takiego rozwiązania, jest ono wystarczająco wydajne dla tekstur o niewielkich rozmiarach. Na
+            ryc. 3. pokazano przykład wykrycia kolizji (piksele wspólne dla obu tekstur zaznaczone są na różowo):</p>
+
+        <div class="vertical-margin">
+            <img src="collision3.png" alt="" style="width: 50%; image-rendering: pixelated;
+            position: relative; left: 50%; transform: translateX(-50%);">
+            <p class="caption"><b>Ryc. 3.</b>&#x2002;Kolizja dinozaura z kaktusem.</p>
+        </div>
+
+        <div class="vertical-margin">
+            <pre>
+<code class="language-cpp">contract_pure bool dsDinosaur_touching(const dsDinosaur* dinosaur,
+                                       const dsGameObject* obstacle) {
+    const sfRectangleShape* dinosaurSprite = dinosaur->sprite,
+                          * obstacleSprite = obstacle->sprite;
+    const sfFloatRect dinosaurBounds = sfRectangleShape_getGlobalBounds(dinosaurSprite),
+            obstacleBounds = sfRectangleShape_getGlobalBounds(obstacleSprite);
+
+    sfFloatRect intersection;
+    if (sfFloatRect_intersects(&dinosaurBounds, &obstacleBounds, &intersection)) {
+
+        sfImage* dinosaurTexture = sfTexture_copyToImage(
+                    sfRectangleShape_getTexture(dinosaurSprite)),
+               * obstacleTexture = sfTexture_copyToImage(
+                    sfRectangleShape_getTexture(obstacleSprite));
+        const sfTransform obstacleTransform
+                = sfRectangleShape_getInverseTransform(obstacleSprite),
+                          dinosaurTransform
+                = sfRectangleShape_getInverseTransform(dinosaurSprite);
+
+        for (int y = 0; y < (int) intersection.height; y++) {
+            for (int x = 0; x < (int) intersection.width; x++) {
+                const sfVector2f point = {intersection.left + (float) x,
+                                 intersection.top + (float) y};
+                const sfVector2u obstaclePoint = ds_convertVector2FU(
+                            sfTransform_transformPoint(&obstacleTransform, point)),
+                                 dinosaurPoint = ds_convertVector2FU(
+                            sfTransform_transformPoint(&dinosaurTransform, point));
+                if (sfImage_getPixel(dinosaurTexture, dinosaurPoint.x / 2,
+                                     dinosaurPoint.y / 2).a == 255
+                    and sfImage_getPixel(obstacleTexture, obstaclePoint.x,
+                                         obstaclePoint.y).a == 255) return true;
+            }
+        }
+
+        free(dinosaurTexture);
+        free(obstacleTexture);
+        return false;
+    } else return false;
+}</code>
+            </pre>
+            <p class="caption"><b>Listing 5.</b>&#x2002;Implementacja algorytmu <i>per-pixel collision</i>.</p>
         </div>
 
     </div>

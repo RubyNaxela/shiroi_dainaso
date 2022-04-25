@@ -1,3 +1,27 @@
+@font-face {
+    font-family: "CMU Serif";
+    src: url('cmunbi.ttf');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "CMU Serif";
+    src: url('cmunbx.ttf');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "CMU Serif";
+    src: url('cmunrm.ttf');
+}
+
+@font-face {
+    font-family: "CMU Serif";
+    src: url('cmunti.ttf');
+    font-style: italic;
+}
+
 * {
     margin: 0;
     padding: 0;

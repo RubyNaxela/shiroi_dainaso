@@ -54,7 +54,7 @@ void __dsObstacleSpawner_spawnPterodactyl(dsObstacleSpawner* _this) {
     dsPterodactyl* pterodactyl = _new(dsPterodactyl)();
     const float factor = dsPterodactyl_speed() / dsCactus_speed(),
             posX = g.config.dinosaur.posX + factor * ((float) g.config.window.size.x - g.config.dinosaur.posX),
-            posY = g.config.floor.posY - (ds_percentChance(1.0f / 3) ? -16.0f : ds_randomBool() ? 16.0f : 0.0f);
+            posY = g.config.floor.posY - ds_randomFrom((int[]) {-32, -16, 0, 16, 32}, 5);
     sfRectangleShape_setPosition(pterodactyl->sprite, (sfVector2f) {posX, posY});
     dsScene_add(_this->scene, (dsGameObject*) pterodactyl);
     _this->__pterodactylSpawned = true;

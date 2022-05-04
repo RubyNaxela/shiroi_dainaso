@@ -19,6 +19,10 @@ bool ds_randomBool() {
     return ds_randomInt(0, 1);
 }
 
+int ds_randomFrom(int* values, int count) {
+    return values[ds_randomInt(0, count - 1)];
+}
+
 float ds_randomFloat(float start, float end) {
     ASSERT(end >= start, dsInvalidArgumentException)
     return (((float) rand()) / (float) INT_MAX) * (end - start) + start;

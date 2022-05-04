@@ -11,6 +11,10 @@
 #define dsGameObject_BASE dsGameObjectType type; sfRectangleShape* sprite; void (* behavior)\
                           (dsGameObject*, float); void (* draw)(const dsGameObject*, sfRenderWindow*);
 
+///
+/// \brief Constants from this enum are used as metadata of dsGameObject
+///        instances indicating which concrete class are they instances of.
+///
 typedef enum dsGameObjectType {
     dsDinosaurT = 1u IN_GAME_OBJECT, dsFloorT = 2u IN_GAME_OBJECT, dsScrollingObjectT = 3u IN_GAME_OBJECT,
     dsSpawnerT = 4u IN_GAME_OBJECT, dsTextT = 5u IN_GAME_OBJECT
@@ -18,12 +22,22 @@ typedef enum dsGameObjectType {
 
 typedef abstract struct dsGameObject dsGameObject;
 
+///
+/// \brief The base for all game objects. These include every object visible in the game as well as technical objects.
+///
 typedef abstract struct dsGameObject {
     dsGameObjectType type;
     sfRectangleShape* sprite;
 
+    ///
+    /// \brief This function is called every frame. Its overrides define the behavior of the game object.
+    ///
     abstract void (* behavior)(dsGameObject*, float);
 
+    ///
+    /// \brief As some game object classes have a different visual representation than the sprite field, and some are
+    ///        not visible at all, Overrides of this function define how the game object should be drawn on the window.
+    ///
     abstract void (* draw)(const dsGameObject*, sfRenderWindow*);
 } dsGameObject;
 

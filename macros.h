@@ -4,9 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-///
-/// \brief Keywords directly borrowed from C++.
-///
 #ifndef __cplusplus
 #define and &&
 #define false 0
@@ -16,20 +13,22 @@
 typedef int bool;
 #endif
 
-///
-/// \brief Additional keywords for better readability.
-///
 #define constructor(type) contract_new type* type##_create
 #define extends(type) type##_BASE
 #define _new(type) type##_create
-#define null (void*) 0
-#define pass __ds_nullFunction
 #define super __base__
+
+///
+/// \brief The null (0) pointer.
+///
+#define null (void*) 0
 
 ///
 /// \brief A function that does nothing. Useful when a function expression
 ///        is required semantically but no code needs to be executed.
 ///
+#define pass __ds_nullFunction
+
 void __ds_nullFunction() {
 }
 

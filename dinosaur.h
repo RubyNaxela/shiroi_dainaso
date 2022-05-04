@@ -8,6 +8,10 @@
 #include "game_object.h"
 #include "util.h"
 
+///
+/// \brief Represents the dinosaur - the character controlled by the player. The dinosaur can
+/// be in one of the four states: normal running, running while ducking, jumping, and stopped.
+///
 typedef struct dsDinosaur {
     extends(dsGameObject)
 
@@ -19,6 +23,11 @@ typedef struct dsDinosaur {
 
 void __dsDinosaur_behavior(dsDinosaur* _this, float deltaTime);
 
+///
+/// \brief Constructs a dsDinosaur. Sets the initial state & position and stores
+/// dinosaur-specific assets to the structure fields for easy access in other functions.
+/// \return pointer to a new dsDinosaur instance
+///
 constructor(dsDinosaur)() {
     dsDinosaur* _this = malloc(sizeof(dsDinosaur));
     _this->type = dsDinosaurT;
@@ -41,6 +50,12 @@ constructor(dsDinosaur)() {
     return _this;
 }
 
+///
+/// \brief This method is called every frame by the scene loop. The dinosaur behavior includes:
+/// response to keyboard controls, animation and jump handling with a simple gravity simulation.
+/// \param _this the formal instance method parameter
+/// \param deltaTime the time between the previous and the current frame
+///
 void __dsDinosaur_behavior(dsDinosaur* _this, const float deltaTime) {
 
     if (not _this->jumping) {
@@ -77,8 +92,14 @@ void __dsDinosaur_behavior(dsDinosaur* _this, const float deltaTime) {
     }
 }
 
-contract_pure bool dsDinosaur_touching(const dsDinosaur* dinosaur, const dsGameObject* obstacle) {
-    const sfRectangleShape* dinosaurSprite = dinosaur->sprite, * obstacleSprite = obstacle->sprite;
+///
+/// \brief Checks for collision of the dinosaur with the specified obstacle using per-pixel collision detection.
+/// \param _this the formal instance method parameter
+/// \param obstacle an obstacle object to test the collision with
+/// \return whether the dinosaur is touching the specified object
+///
+contract_pure bool dsDinosaur_touching(const dsDinosaur* _this, const dsGameObject* obstacle) {
+    const sfRectangleShape* dinosaurSprite = _this->sprite, * obstacleSprite = obstacle->sprite;
     const sfFloatRect dinosaurBounds = sfRectangleShape_getGlobalBounds(dinosaurSprite),
             obstacleBounds = sfRectangleShape_getGlobalBounds(obstacleSprite);
 
@@ -108,6 +129,10 @@ contract_pure bool dsDinosaur_touching(const dsDinosaur* dinosaur, const dsGameO
     } else return false;
 }
 
+///
+/// \brief Changes the dinosaur state to stopped by changing its texture.
+/// \param _this the formal instance method parameter
+///
 void dsDinosaur_hit(dsDinosaur* _this) {
     sfRectangleShape_setTexture(_this->sprite, _this->hitTexture, false);
 }
